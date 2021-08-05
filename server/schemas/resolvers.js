@@ -35,23 +35,33 @@ Mutation:{
 
     return { token, user };
   },
-  saveBook: async(parent, { user },context) => {
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: user._id },
-      { $addToSet: { savedBooks: context.bookId } }
-    );
-    return updatedUser;
-  }
-  
-    
+  saveBook: async (parent, { bookData }, context) => {
+    if (context.user) {
+      const updatedUser = await User.findByIdAndUpdate(
+        { _id: context.user._id },
+        { $push: { savedBooks: bookData } },
+        { new: true }
+      );
+
+      return updatedUser;
+    }
+
+    throw new AuthenticationError('You need to be logged in!');
+  },
+  deleteBook: async (parent, { bookId }, context) => {
+    if (context.user) {
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: context.user._id },
+        { $pull: { savedBooks: { bookId } } },
+        { new: true }
+      );
+
+      return updatedUser;
+    }
+
+    throw new AuthenticationError('You need to be logged in!');
+  },
 },
-deleteBook: async(parent, { user }, context) => {
-  const updatedUser = await User.findOneAndUpdate(
-    { _id: user._id },
-    { $pull: { savedBooks: { bookId: context.bookId } } }
-  );
-  return updatedUser;
-}
-}
+};
 
 module.exports = resolvers;
