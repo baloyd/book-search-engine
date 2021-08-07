@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Jumbotron, Container, Col, Form, Button, Card, CardColumns } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
-import { useMutation} from '@apollo/react-hooks';
+import { useMutation} from '@apollo/client';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 import { SAVE_BOOK } from '../utils/mutations';
 
@@ -14,6 +14,9 @@ const SearchBooks = () => {
 
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
+
+  //sets up access to the Mutation SAVE_BOOK and the function saveBook
+  const [saveBook, { error }] = useMutation(SAVE_BOOK);
 
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
@@ -66,7 +69,9 @@ const SearchBooks = () => {
     }
 
     try {
-      const response = await useMutation(SAVE_BOOK, token);
+      const response = await saveBook({
+        variables: {bookData: { ...bookToSave }},
+      });
 
       if (!response.ok) {
         throw new Error('something went wrong!');
