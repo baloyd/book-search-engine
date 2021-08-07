@@ -35,8 +35,7 @@ type Book {
   }
 
   type Query {
-    users: [User]
-    getSingleUser(username: String!): User
+    me: User
   }
 
   type Mutation {
