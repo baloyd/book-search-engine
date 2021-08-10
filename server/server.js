@@ -4,6 +4,7 @@ const { typeDefs, resolvers } = require('./schemas');
 const db = require('./config/connection');
 const routes = require('./routes');
 const {authMiddleware} = require ('./utils/auth')
+const mongoose = require("mongoose");
 const { ApolloServer } = require('apollo-server-express');
 
 const app = express();
@@ -17,6 +18,15 @@ const server = new ApolloServer({
 
 server.applyMiddleware({ app });
 
+mongoose.connect(
+  process.env.MONGODB_URI || 'mongodb://localhost/booksearchDB',
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  },
+);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
