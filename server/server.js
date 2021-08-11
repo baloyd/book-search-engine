@@ -10,23 +10,23 @@ const { ApolloServer } = require('apollo-server-express');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: authMiddleware,
-});
+async function startApolloServer(typeDef, resolvers) {
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers
+   
+  });
 
-server.applyMiddleware({ app });
+  await server.start();
+  const app = express();
+  server.applyMiddleware({
+    app,
 
-mongoose.connect(
-  process.env.MONGODB_URI || 'mongodb://localhost/booksearchDB',
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-  },
-);
+    path: '/'
+  });
+  await new Promise(resolve => app.listen({ port: 4000 }, resolve));
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+}
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -42,11 +42,11 @@ app.get('*', (req, res) => {
 
 
 
-db.once('open', () => {
-  app.listen(PORT, () =>{ 
-    console.log(`API server running on port ${PORT}`);
-    console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`);
+// db.once('open', () => {
+//   app.listen(PORT, () =>{ 
+//     console.log(`API server running on port ${PORT}`);
+//     console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`);
 
-});
+// });
 
-});
+// });
