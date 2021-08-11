@@ -4,7 +4,6 @@ const { typeDefs, resolvers } = require('./schemas');
 const db = require('./config/connection');
 // const routes = require('./routes');
 const {authMiddleware} = require ('./utils/auth')
-const mongoose = require("mongoose");
 const { ApolloServer } = require('apollo-server-express');
 
 const app = express();
@@ -24,8 +23,8 @@ async function startApolloServer(typeDef, resolvers) {
 
     path: '/'
   });
-  await new Promise(resolve => app.listen({ port: 4000 }, resolve));
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+  await new Promise(resolve => app.listen({ PORT }, resolve));
+  console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
 }
 
 app.use(express.urlencoded({ extended: true }));
